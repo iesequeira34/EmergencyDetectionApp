@@ -1,7 +1,7 @@
 [project]
-name = "new-app"
+name = "EmergencyDetectionApp"
 version = "0.1.0"
-description = "Add your description here"
+description = "FastAPI hosting Speech Verification and ASR Models"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
