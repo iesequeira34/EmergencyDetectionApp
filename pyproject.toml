@@ -1,0 +1,26 @@
+[project]
+name = "new-app"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]>=0.116.1",
+    "flask>=3.1.1",
+    "openai-whisper>=20250625",
+    "pyannote-audio>=3.3.2",
+    "sounddevice>=0.5.2",
+    "speechbrain>=1.0.3",
+    "speechrecognition>=3.14.3",
+    "torch>=2.7.1",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
