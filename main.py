@@ -1,21 +1,17 @@
 import os
 from fastapi import FastAPI, UploadFile
 import numpy as np
-import torch
 from speechbrain.inference.speaker import SpeakerRecognition
 import random
 from faster_whisper import WhisperModel
+import shutil
+import torch
 
 import re
-import shutil
 
-torch.backends.cuda.matmul.allow_tf32 = True
-torch.backends.cudnn.allow_tf32 = True
-
-# torch.set_default_device("cuda")
 SPEAKER_PATH = "./speaker_voices/"
 EMBEDDING_MODEL = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb",  run_opts={"device":"cuda"})
-STT_MODELX = WhisperModel(model_size_or_path="base.en", device="cuda", compute_type="float16")
+STT_MODELX = WhisperModel(model_size_or_path="base.en", cpu_threads=4, device="cuda")
 UPLOADS = "./uploads/"
 
 ONBOARDING_SENTENCES = {
@@ -46,6 +42,9 @@ async def enroll_user(uploaded_file: UploadFile, user_id: int, sentence_id: int)
 
     # if len(os.listdir(user_id_path)) == 3:
     #     shutil.rmtree(user_id_path)
+
+    if os.path.exists(user_id_path) and len(os.listdir(user_id_path)) == 3:
+        shutil.rmtree(user_id_path)
 
     new_file = os.path.join(user_id_path, f"{sentence_id}.wav")
     
@@ -95,8 +94,8 @@ async def emergency_detection(uploaded_file: UploadFile, user_id: int):
             score_list = [EMBEDDING_MODEL.verify_files(path_x=os.path.join(user_id_path, file), path_y=new_file)[0] for file in os.listdir(user_id_path)]
             final_score = np.mean([score.cpu() for score in score_list])
             wakeword_detected = "help" in output_text.strip().lower()
-            # emergency_detected = wakeword_detected and (final_score >= 0.2)
-            emergency_detected = wakeword_detected
+            emergency_detected = wakeword_detected and (final_score >= 0.2)
+            # emergency_detected = wakeword_detected
 
             print(f"User said: {output_text.strip()}, Emergency: {emergency_detected}, User match: {final_score}")
             return {"IsEmergency": f"{emergency_detected}"}

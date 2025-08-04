@@ -7,11 +7,10 @@ requires-python = ">=3.10"
 dependencies = [
     "fastapi[standard]>=0.116.1",
     "faster-whisper>=1.1.1",
-    "flask>=3.1.1",
-    "pyannote-audio>=3.3.2",
-    "sounddevice>=0.5.2",
+    "soundfile>=0.13.1",
     "speechbrain>=1.0.3",
     "torch>=2.7.1",
+    "torchaudio>=2.7.1",
 ]
 
 [[tool.uv.index]]
