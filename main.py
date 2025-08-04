@@ -36,11 +36,6 @@ def isEnrollmentDone(user_id: int):
 @app.post("/enroll/{user_id}/{sentence_id}")
 async def enroll_user(uploaded_file: UploadFile, user_id: int, sentence_id: int):
     user_id_path = os.path.join(SPEAKER_PATH, str(user_id))
-    # max_len = len(os.listdir(user_id_path)) if os.path.exists(user_id_path) else 0
-    # new_file = os.path.join(user_id_path, f"{max_len+1}.wav")
-
-    # if len(os.listdir(user_id_path)) == 3:
-    #     shutil.rmtree(user_id_path)
 
     if os.path.exists(user_id_path) and len(os.listdir(user_id_path)) == 3:
         shutil.rmtree(user_id_path)
