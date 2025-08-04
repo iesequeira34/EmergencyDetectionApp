@@ -4,7 +4,8 @@ import numpy as np
 import torch
 from speechbrain.inference.speaker import SpeakerRecognition
 import random
-import whisper
+from faster_whisper import WhisperModel
+
 import re
 import shutil
 
@@ -14,7 +15,7 @@ torch.backends.cudnn.allow_tf32 = True
 # torch.set_default_device("cuda")
 SPEAKER_PATH = "./speaker_voices/"
 EMBEDDING_MODEL = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb",  run_opts={"device":"cuda"})
-STT_MODEL = whisper.load_model("base.en", device="cuda")
+STT_MODELX = WhisperModel(model_size_or_path="base.en", device="cuda", compute_type="float16")
 UPLOADS = "./uploads/"
 
 ONBOARDING_SENTENCES = {
@@ -55,7 +56,8 @@ async def enroll_user(uploaded_file: UploadFile, user_id: int, sentence_id: int)
             content = await uploaded_file.read()
             with open(new_file, 'wb') as wavfile:
                 wavfile.write(content)
-            output_text = STT_MODEL.transcribe(new_file)['text']
+            segments, _ = STT_MODELX.transcribe(new_file, beam_size=7, vad_filter=True)
+            output_text = " ".join(segment.text for segment in segments)
             output_text = re.sub("[^A-Za-z\s]", "", output_text)
             output_text = re.sub("\s\s+", " ", output_text)
             print("User said: ", output_text)
@@ -84,7 +86,9 @@ async def emergency_detection(uploaded_file: UploadFile, user_id: int):
             content = await uploaded_file.read()
             with open(new_file, 'wb') as wavfile:
                 wavfile.write(content)
-            output_text = STT_MODEL.transcribe(new_file)['text']
+
+            segments, _ = STT_MODELX.transcribe(new_file, beam_size=7, vad_filter=True)
+            output_text = " ".join(segment.text for segment in segments)
             output_text = re.sub("[^A-Za-z\s]", "", output_text)
             output_text = re.sub("\s\s+", " ", output_text)
             user_id_path = os.path.join(SPEAKER_PATH, str(user_id))

@@ -6,12 +6,11 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi[standard]>=0.116.1",
+    "faster-whisper>=1.1.1",
     "flask>=3.1.1",
-    "openai-whisper>=20250625",
     "pyannote-audio>=3.3.2",
     "sounddevice>=0.5.2",
     "speechbrain>=1.0.3",
-    "speechrecognition>=3.14.3",
     "torch>=2.7.1",
 ]
 
