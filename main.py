@@ -5,7 +5,6 @@ from speechbrain.inference.speaker import SpeakerRecognition
 import random
 from faster_whisper import WhisperModel
 import shutil
-import torch
 
 import re
 
